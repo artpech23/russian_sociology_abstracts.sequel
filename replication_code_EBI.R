@@ -184,7 +184,29 @@ plot(g,
 }
 
 
+###################
+## session Info: ##
+###################
 
+
+#sessionInfo() %>% report::report()
+
+# Analyses were conducted using the R Statistical language (version 4.3.1; R Core Team, 2023) on Windows 10 x64 (build 19045),
+# using the packages:
+
+# intergraph  (version 2.0.4; Bojanowski M, 2023),
+# igraph      (version 2.0.2; Csardi G, Nepusz T, 2006),
+# lubridate   (version 1.9.3; Grolemund G, Wickham H, 2011),
+# tibble      (version 3.2.1; Müller K, Wickham H, 2023),
+# netUtils    (version 0.8.2; Schoch D, 2023),
+# ggplot2     (version 3.5.1; Wickham H, 2016),
+# forcats     (version 1.0.0; Wickham H, 2023),
+# stringr     (version 1.5.1; Wickham H, 2023),
+# tidyverse   (version 2.0.0; Wickham H et al., 2019),
+# dplyr       (version 1.1.2; Wickham H et al., 2023),
+# purrr       (version 1.0.2; Wickham H, Henry L, 2023),
+# readr       (version 2.1.5; Wickham H et al., 2024) and 
+# tidyr       (version 1.3.1; Wickham H et al., 2024).
 
 
 
