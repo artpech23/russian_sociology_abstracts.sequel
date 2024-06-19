@@ -1,7 +1,5 @@
 ## author: Arthur Pecherskikh (apecherskikh@eu.spb.ru)
-## code to reproduce the analysis of 
-## the editorial board interlocking (EBI) network of Russian sociological journals
-
+## code to reproduce the analysis of the editorial board interlocking (EBI) network of Russian sociological journals
 
 ################
 ## libraries: ##
@@ -43,9 +41,7 @@ g_journals <- graph_from_adjacency_matrix(journal_matrix,
                                           mode = "undirected",
                                           weighted = TRUE)
 
-## remove unnesessary objects:
 rm(bipartite_matrix, journal_matrix, two.mode)
-
 
 ##############################
 ## get degree centralities: ## 
@@ -58,7 +54,6 @@ V(g_journals)$degree = degree(g_journals, mode = "total")
   select(-intergraph_id) %>% 
   arrange(desc(degree)) %>% 
   head()
-
 
 ##########################
 ## community detection: ##
@@ -73,7 +68,6 @@ V(g_journals)$cl3 = membership(cl3)
 ## solution preview:
 set.seed(42)
 plot(g_journals,
-     #vertex.color = V(g_journals)$cl3,
      vertex.color = ifelse(V(g_journals)$cl3 == 1,
                            "#988F2A",
                            ifelse(V(g_journals)$cl3 == 2,
@@ -137,25 +131,18 @@ communities <- (asDF(g_journals))$vertexes %>%
             share_foreigners = mean(share_foreigners),
             share_RAS = mean(share_ras),
             share_moscowites = mean(share_moscowite)
-            ## more attributes can be calculated here
-            ## I include those which are reported among the picture
+            ## more attributes can be calculated here. I include those which are reported among the picture.
             )
 
 ## properties' preview:
 communities[1:3,1:4]
 
-
 #######################
 ## reduced networks: ##
 #######################
 
-
-## here, you need to run par() and loop together
-## to get the reduced graphs on the same picture.
-
-## you may also need to zoom to see them
-## (this is due to RStusio default view properties)
-
+## Here, you need to run par() and loop together. To get the reduced graphs on the same picture.
+## You may also need to zoom to see them (this is due to RStusio default view properties).
 
 par(mfrow = c(2,2))
 
@@ -175,12 +162,9 @@ V(g)$color <-((asDF(g))$vertexes %>%
                                           ifelse(cl3 == 2,
                                                  "coral1",
                                                  "#30638E"))))$cl_colors
-  
-
 plot(g,
      vertex.label = NA,
      main = str_c("сила связи > ", i))
-
 }
 
 
@@ -188,11 +172,9 @@ plot(g,
 ## session Info: ##
 ###################
 
+# Description below created via sessionInfo() %>% report::report()
 
-#sessionInfo() %>% report::report()
-
-# Analyses were conducted using the R Statistical language (version 4.3.1; R Core Team, 2023) on Windows 10 x64 (build 19045),
-# using the packages:
+# Analyses were conducted using the R Statistical language (version 4.3.1; R Core Team, 2023) on Windows 10 x64 (build 19045), using the packages:
 
 # intergraph  (version 2.0.4; Bojanowski M, 2023),
 # igraph      (version 2.0.2; Csardi G, Nepusz T, 2006),
@@ -207,6 +189,3 @@ plot(g,
 # purrr       (version 1.0.2; Wickham H, Henry L, 2023),
 # readr       (version 2.1.5; Wickham H et al., 2024) and 
 # tidyr       (version 1.3.1; Wickham H et al., 2024).
-
-
-
