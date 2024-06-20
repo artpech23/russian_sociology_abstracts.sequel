@@ -59,7 +59,9 @@
 
 
 ```{r}
-for(i in seq(10, 70, 5)) { ## To check the validity, you can change it to 10-15 topics which are relatively easy to compute. the file to use this chunk is stored in `TM_solution.RData`
+## To check the validity, you can change it to 10-15 topics
+## which are relatively easy to compute. load `TM_solution.RData` for that
+for(i in seq(10, 70, 5)) {
   model <- stm(stm_data$documents,
                stm_data$vocab,
                K = i,
