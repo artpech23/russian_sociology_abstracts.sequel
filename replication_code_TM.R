@@ -8,6 +8,9 @@
 library(tidyverse)
 library(ggtext)
 
+library(compositions)
+library(ape)
+
 #######################
 ## load environment: ##
 #######################
@@ -262,16 +265,82 @@ ctmFit16$theta %>%
   )
 
 
+############################
+## topics clusterization: ##
+############################
+
+clustdata <- ctmFit16$theta %>%
+  data.frame() %>%
+  `colnames<-`(c("опросы и обследования", "семья и гендер", "педагогика", "демография", "геополитика", "город", "медицина", "философия", "управление", "высшее образование", "соц. теория", "рынок труда", "интернет и медиа", "государство и управление", "молодежь", "регионы"))
+
+hc = clustdata %>%
+  acomp() %>% 
+  variation() %>%
+  as.dist() %>%
+  hclust(method = "ward")
+
+
+plot(as.phylo(hc), cex = 1, label.offset = 0.1) ## zoom out for optimal view
+
+
+#######################################
+## topical shares across the corpus: ##
+#######################################
+
+ctmFit16$theta %>% 
+  data.frame() %>% 
+  `colnames<-`(c("опросы и обследования", "семья и гендер", "педагогика", "демография", "геополитика", "город", "медицина", "философия", "управление", "высшее образование", "соц. теория", "рынок труда", "интернет и медиа", "государство и управление", "молодежь", "регионы")) %>% 
+  bind_cols(ids) %>%
+  #colnames() %>% toString()
+  pivot_longer(cols = c(`опросы и обследования`, `семья и гендер`, педагогика, демография, геополитика, город, медицина, философия, управление, `высшее образование`, `соц. теория`, `рынок труда`, `интернет и медиа`, `государство и управление`, молодежь, регионы),
+               names_to = "topic",
+               values_to = "share") %>% 
+  
+  mutate(journal_name = tolower(journal_name)) %>% 
+  left_join(ids %>% 
+              mutate(journal_name = tolower(journal_name)) %>%
+              left_join(ebi %>%
+                          select(journal_name, cluster)) %>% 
+              select(id, cluster)) %>% 
+  
+  filter(share > 0.1) %>% 
+  count(cluster, topic) %>%
+  mutate(cluster = str_replace_all(cluster, "1", "west")) %>% 
+  mutate(cluster = str_replace_all(cluster, "2", "region")) %>% 
+  mutate(cluster = str_replace_all(cluster, "3", "RAS + SocIs")) %>% 
+  
+  ggplot(aes(reorder(topic, n), n, fill = cluster)) +
+  geom_bar(stat = "identity",
+           position = "stack",
+           width = 0.8
+  ) +
+  coord_flip() +
+  geom_text(aes(label = n),
+            position = position_stack(vjust = .5),
+            fontface = "bold") +
+  scale_fill_manual(values = c("#30638E", "coral1", "#988F2A")) +
+  theme_minimal() +
+  labs(title = "**Представленность тем по всем выпускам**",
+       subtitle = "<i>кластеры: <span style='color:#988F2A;'>западнический<span>, <span style='color:#30638E;'>центральный</span>, <span style='color:coral1;'>восточный</span></i>",
+       x = "",
+       y = "") +
+  scale_y_continuous(breaks = seq(0,800,100)) +
+  theme(legend.position = "none",
+        plot.title = element_markdown(),
+        plot.subtitle = element_markdown())
+
 ###################
 ## session Info: ##
 ###################
 
 # Description below created via sessionInfo() %>% report::report()
 
-# Analyses were conducted using the R Statistical language (version 4.3.1; R Core Team, 2023) on Windows 10 x64 (build 19045), using the packages
+# Analyses were conducted using the R Statistical language (version 4.3.1; R Core Team, 2023) on Windows 10 x64 (build 19045), using the packages 
 
 # lubridate (version 1.9.3; Grolemund G, Wickham H, 2011),
 # tibble (version 3.2.1; Müller K, Wickham H, 2023),
+# ape (version 5.8; Paradis E, Schliep K, 2019),
+# compositions (version 2.0.8; van den Boogaart KG et al., 2024),
 # ggplot2 (version 3.5.1; Wickham H, 2016),
 # forcats (version 1.0.0; Wickham H, 2023),
 # stringr (version 1.5.1; Wickham H, 2023),
@@ -279,5 +348,5 @@ ctmFit16$theta %>%
 # dplyr (version 1.1.2; Wickham H et al., 2023),
 # purrr (version 1.0.2; Wickham H, Henry L, 2023),
 # readr (version 2.1.5; Wickham H et al., 2024),
-# tidyr (version 1.3.1; Wickham H et al., 2024) and 
+# tidyr (version 1.3.1; Wickham H et al., 2024) and
 # ggtext (version 0.1.2; Wilke C, Wiernik B, 2022).
